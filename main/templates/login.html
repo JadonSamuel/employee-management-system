@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h2>Login</h2>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form id="login-form" action="/custom_login/" method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <p></p>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <p></p>
+        <input type="submit" value="Login">
+    </form>
+    <p></p>
+    <a href="{% url 'register' %}">Don't have a account?</a>
+<script>
+     function validateForm() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var usernameError = document.getElementById("username-error");
+            var passwordError = document.getElementById("password-error");
+            var isValid = true;
+
+
+            usernameError.textContent = "";
+            passwordError.textContent = "";
+
+
+            if (username.trim() === "") {
+                usernameError.textContent = "Username is required";
+                isValid = false;
+            }
+
+
+            if (password.trim() === "") {
+                passwordError.textContent = "Password is required";
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+
+</script>
+</body>
+</html>

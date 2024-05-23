@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h2>User Registration</h2>
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% endif %}
+    <form action="/register/" method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <p></p>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <p></p>
+        <input type="submit" value="Register">
+    </form>
+<script>
+     function validateForm() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var usernameError = document.getElementById("username-error");
+            var passwordError = document.getElementById("password-error");
+            var isValid = true;
+
+
+            usernameError.textContent = "";
+            passwordError.textContent = "";
+
+             if (username.trim().length < 5) {
+                usernameError.textContent = "Username must be at least 5 characters long";
+                isValid = false;
+            }
+
+
+            if (password.trim().length < 8) {
+                passwordError.textContent = "Password must be at least 8 characters long";
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Employee</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+</head>
+<body>
+    <h1>Add Employee</h1>
+    <form method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name">
+        </div>
+        <p></p>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" name="age" id="age">
+        </div>
+        <p></p>
+        <div>
+            <label for="salary">Salary:</label>
+            <input type="number" name="salary" id="salary">
+        </div>
+        <p></p>
+    <div>
+    <label for="departments">Department:</label>
+    <select name="departments" id="departments">
+        {% for department in all_departments %}
+            <option value="{{ department.id }}">{{ department.name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+        <p></p>
+        <div>
+            <label for="committees">Committees:</label>
+            <select name="committees" id="committees" multiple>
+                {% for committee in all_committees %}
+                    <option value="{{ committee.id }}">{{ committee.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <p></p>
+        <div>
+            <label for="selected_committees">Selected Committees:</label>
+            <input type="text" id="selected_committees" name="selected_committees" readonly>
+        </div>
+        <p></p>
+        <button type="submit">Submit</button>
+    </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <script>
+function validateForm() {
+    var name = document.getElementById('name').value.trim();
+    var age = document.getElementById('age').value.trim();
+    var salary = document.getElementById('salary').value.trim();
+    var department = document.getElementById('departments').value.trim();
+
+    if (name === '') {
+        alert("Please enter a valid name");
+        return false;
+    }
+
+    var namePattern = /^[A-Za-z\s]+$/;
+    if (!namePattern.test(name)) {
+        alert("Name should only contain alphabetic characters and spaces.");
+        return false;
+    }
+
+    if (age === '') {
+        alert("Please enter a valid age");
+        return false;
+    }
+
+    if (isNaN(age) || parseInt(age) < 18) {
+        alert("Please enter a valid age (age should be a number and 18 or greater).");
+        return false;
+    }
+
+    if (salary === '' || isNaN(salary) || parseFloat(salary) < 0) {
+        alert("Please enter a valid salary (salary should be a number and greater than or equal to 0).");
+        return false;
+    }
+     if (salary.replace('.', '').replace(',', '').length > 8) {
+    // Assuming you want to allow up to 8 digits before the decimal point
+    alert("Please enter a salary with less than 8 digits before the decimal point.");
+    return false;
+}
+
+    // Check the number of selected committees
+    var selectedCommittees = document.getElementById('committees').selectedOptions;
+    if (selectedCommittees.length > 3) {
+        alert("Please select up to three committees.");
+        return false;
+    }
+
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var departmentInput = document.getElementById('department');
+    var departmentsSelect = document.getElementById('departments');
+
+    departmentsSelect.addEventListener('change', function() { // Change to 'departments'
+        var selectedOption = departmentsSelect.options[departmentsSelect.selectedIndex];
+        var selectedDepartment = selectedOption.value;
+        departmentInput.value = selectedDepartment;
+    });
+
+    var committeeSelect = document.getElementById('committees');
+    var selectedCommitteesTextBox = document.getElementById('selected_committees');
+
+    committeeSelect.addEventListener('change', function() {
+        var selectedOptions = Array.from(committeeSelect.selectedOptions);
+        if (selectedOptions.length > 3) {
+            alert("Please select up to three committees.");
+            // Deselect the last selected option
+            selectedOptions[selectedOptions.length - 1].selected = false;
+            return;
+        }
+        var selectedCommittees = selectedOptions.map(option => option.textContent);
+        selectedCommitteesTextBox.value = selectedCommittees.join(', ');
+    });
+
+    // Initialize text input with initially selected committees
+    var initialSelectedOptions = Array.from(committeeSelect.selectedOptions);
+    var initialSelectedCommittees = initialSelectedOptions.map(option => option.textContent);
+    selectedCommitteesTextBox.value = initialSelectedCommittees.join(', ');
+
+});
+
+    </script>
+</body>
+</html>

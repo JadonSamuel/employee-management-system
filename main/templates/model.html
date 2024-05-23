@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Database</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+
+    <h1>Employee Details</h1>
+    <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    <p></p>
+    <a href="{% url 'add_employee' %}">Add Employee</a>
+    <p></p>
+    <form id="search-form" onsubmit="return searchEmployees()">
+        <label for="search">Search:</label>
+        <input id="search" name="search" type="search">
+        <button type="submit">Search</button>
+    </form>
+    {% if model_objects %}
+    <table id="employee-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Salary</th>
+                <th>Department</th>
+                <th>Committees</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in model_objects %}
+            <tr {% if object.name == search_param %}class="highlighted"{% endif %}>
+                <td>{{ object.name }}</td>
+                <td>{% if object.age %}{{ object.age }}{% endif %}</td>
+                <td>{{ object.salary }}</td>
+                <td>{{ object.department.name }}</td>
+                <td>
+                    {% for committee in object.employeecommittee_set.all %}
+                    {{ committee.committee.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+</td>
+                <td><a href="{% url 'edit_employee' object.id %}">Edit</a></td>
+                <td><a href="{% url 'delete_employee' object.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No objects found.</p>
+    {% endif %}
+
+    {% if not model_objects and search_param %}
+    <p>Employee with name "{{ search_param }}" does not exist.</p>
+    {% endif %}
+
+    <script>
+    function searchEmployees() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("employee-table");
+        tr = table.getElementsByTagName("tr");
+        if (input.value.trim() === '') {
+            alert("Please enter a name");
+            return false;
+        }
+
+        for (i = 0; i < tr.length; i++) {
+            tr[i].classList.remove("highlighted");
+        }
+
+        var matchFound = false;
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    tr[i].classList.add("highlighted");
+                    matchFound = true;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        if (!matchFound && filter.trim() !== "") {
+            alert("Employee does not exist");
+        }
+
+        window.history.replaceState({}, '', '?search=' + encodeURIComponent(input.value));
+
+        return false;
+    }
+    </script>
+
+</body>
+</html>

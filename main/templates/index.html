@@ -1,0 +1,15 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Django Project</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h1>Welcome to my Django Project</h1>
+    <p>if you are new to this website,</p>
+    <a href="{% url 'register' %}">Click here to register</a>
+    <p>Already a user,</p>
+    <a href="{% url 'custom_login' %}">Click here to login</a>
+</body>
+</html>
